@@ -1,6 +1,6 @@
 Installation
 =============
-    npm install sysuser
+    npm install matchcmd
     
 What does it do?
 =============
