@@ -49,12 +49,17 @@ var helpers = {
 
 module.exports = {
 	use: function(pattern, callback){
-		var cmd = helpers.parse(pattern);
-		helpers.commands.push({
-			pattern: new RegExp(cmd.pattern, 'i'),
-			fn: callback,
-			cmd: cmd
-		});
+		if(typeof(pattern) == 'string'){
+			pattern = [pattern];
+		}
+		_.each(pattern, function(p){
+			var cmd = helpers.parse(p);
+			helpers.commands.push({
+				pattern: new RegExp(cmd.pattern, 'i'),
+				fn: callback,
+				cmd: cmd
+			});
+		})
 	},
 	fail: function(callback){
 		helpers.emptyCommand = callback;
@@ -65,12 +70,12 @@ module.exports = {
 			if(result !== false){ return; }
 			var regex = command.pattern.exec(input);
 			//console.log('regex test', command.pattern, input);
-			if(regex == null){
-				return helpers.emptyCommand(input);
+			if(regex){
+				command.parts = regex;
+				result = command;
 			}
-			command.parts = regex;
-			result = command;
 		});
+
 
 		if(result){
 			var args = {};
@@ -86,6 +91,8 @@ module.exports = {
 				parts: result.parts,
 				raw: input
 			});
+		}else{
+			return helpers.emptyCommand(input);
 		}
 	}
 }
